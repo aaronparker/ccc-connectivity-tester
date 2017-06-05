@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://docs.citrix.com/en-us/citrix-cloud/overview/requirements/internet-connectivity-requirements.html -->
+<Tests>
+    <Ports>
+        <Port TCP="True" UDP="False">443</Port>
+    </Ports>
+    <URLs>
+        <URL>citrixworkspacesapi.net</URL>
+        <URL>cloud.com</URL>
+        <URL>sharefile.com</URL>
+        <URL>servicebus.windows.net</URL>
+        <URL>cwsproduction.blob.core.windows.net</URL>
+        <URL>nssvc.net</URL>
+        <URL>xendesktop.net</URL>
+        <URL>browser-release-a.azureedge.net</URL>
+        <URL>browser-release-b.azureedge.net</URL>
+    </URLs>
+</Tests>
