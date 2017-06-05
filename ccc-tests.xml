@@ -2,7 +2,7 @@
 <!-- http://docs.citrix.com/en-us/citrix-cloud/overview/requirements/internet-connectivity-requirements.html -->
 <Tests>
     <Ports>
-        <Port TCP="True" UDP="False">443</Port>
+        <Port>443</Port>
     </Ports>
     <URLs>
         <URL>service.citrixworkspacesapi.net</URL>

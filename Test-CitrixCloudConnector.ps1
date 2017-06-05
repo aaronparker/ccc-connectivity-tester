@@ -22,11 +22,9 @@
         Description:
         Tests the URLs listed in 'Ccc-Tests.xml' and returns the result.
 #>
-
-# Parameter sets here means that Install, MDT and ConfigMgr actions are mutually exclusive
 [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = "Low", DefaultParameterSetName='Base')]
 PARAM (
-    [Parameter(ParameterSetName='Base', Mandatory=$True, HelpMessage="The path to the XML document describing URLs and ports to test.")]
+    [Parameter(ParameterSetName='Base', Mandatory=$True, Position=0, HelpMessage="The path to the XML document describing URLs and ports to test.")]
     [ValidateScript({ If (Test-Path $_ -PathType 'Leaf') { $True } Else { Throw "Cannot find file $_" } })]
     [string]$Xml
 )
@@ -47,14 +45,12 @@ $xmlPorts = (Select-Xml -XPath "/Tests/Ports" -Xml $xmlDocument).Node
 
 # Test each URL and output the result
 ForEach ( $url in $xmlURLs.URL) {
-
     ForEach ($port in $xmlPorts.Port) {
-        $intPort = ($port.InnerText).ToInt16($Null)
-        $result = Test-NetConnection -ComputerName $url -Port $intPort -InformationLevel Quiet
-        If ($result.PingSucceeded) {
-            Write-Host "Success: $url" -ForegroundColor Green
+        $result = Test-NetConnection -ComputerName $url -Port $port -InformationLevel Quiet
+        If ($result) {
+            Write-Host "Success: $($url):$port" -ForegroundColor Green
         } Else {
-            Write-Error "Connection to $url failed."
+            Write-Host "Connection to $($url):$port failed." -ForegroundColor Red
         }
     }
 }
