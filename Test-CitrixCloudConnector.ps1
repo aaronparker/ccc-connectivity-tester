@@ -49,7 +49,8 @@ $xmlPorts = (Select-Xml -XPath "/Tests/Ports" -Xml $xmlDocument).Node
 ForEach ( $url in $xmlURLs.URL) {
 
     ForEach ($port in $xmlPorts.Port) {
-        $result = Test-NetConnection -ComputerName $url -Port $port -InformationLevel Quiet
+        $intPort = ($port.InnerText).ToInt16($Null)
+        $result = Test-NetConnection -ComputerName $url -Port $intPort -InformationLevel Quiet
         If ($result.PingSucceeded) {
             Write-Host "Success: $url" -ForegroundColor Green
         } Else {
