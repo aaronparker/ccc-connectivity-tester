@@ -50,7 +50,7 @@ ForEach ( $url in $xmlURLs.URL) {
         If ($result) {
             Write-Host "Success: $($url):$port" -ForegroundColor Green
         } Else {
-            Write-Host "Connection to $($url):$port failed." -ForegroundColor Red
+            Write-Host "Failed: $($url):$port" -ForegroundColor Red
         }
     }
 }
