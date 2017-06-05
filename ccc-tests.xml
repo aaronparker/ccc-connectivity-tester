@@ -5,12 +5,16 @@
         <Port TCP="True" UDP="False">443</Port>
     </Ports>
     <URLs>
-        <URL>citrixworkspacesapi.net</URL>
-        <URL>cloud.com</URL>
+        <URL>service.citrixworkspacesapi.net</URL>
+        <URL>core.citrixworkspacesapi.net</URL>
+        <URL>agenthub.citrixworkspacesapi.net</URL>
+        <URL>messaging-eastus-release-b.citrixworkspacesapi.net</URL>
+        <URL>ctxwsp-entitlements-eastus.servicebus.windows.net</URL>
+        <URL>sessionmanager.cloud.com</URL>
         <URL>sharefile.com</URL>
         <URL>servicebus.windows.net</URL>
         <URL>cwsproduction.blob.core.windows.net</URL>
-        <URL>nssvc.net</URL>
+        <URL>reg.c.nssvc.net</URL>
         <URL>xendesktop.net</URL>
         <URL>browser-release-a.azureedge.net</URL>
         <URL>browser-release-b.azureedge.net</URL>
