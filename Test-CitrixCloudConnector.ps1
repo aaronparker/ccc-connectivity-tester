@@ -48,9 +48,9 @@ ForEach ( $url in $xmlURLs.URL) {
     ForEach ($port in $xmlPorts.Port) {
         $result = Test-NetConnection -ComputerName $url -Port $port -InformationLevel Quiet
         If ($result) {
-            Write-Host "Success: $($url):$port" -ForegroundColor Green
+            Write-Host "SUCCESS: $($url):$port" -ForegroundColor Green
         } Else {
-            Write-Host "Failed: $($url):$port" -ForegroundColor Red
+            Write-Host "FAILED: $($url):$port" -ForegroundColor Red
         }
     }
 }
