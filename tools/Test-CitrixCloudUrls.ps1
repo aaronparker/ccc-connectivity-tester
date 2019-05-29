@@ -7,7 +7,6 @@
         Reads ports and URLs required for outbound connectivity for the Citrix Cloud Connector. Tests each URL and returns a result for pass or fail.
 
     .NOTES
-        Name: Test-CitrixCloudConnector.ps1
         Author: Aaron Parker
         Twitter: @stealthpuppy
 
