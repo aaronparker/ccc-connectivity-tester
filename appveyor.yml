@@ -1,0 +1,22 @@
+version: 1.0.{build}
+pull_requests:
+  do_not_increment_build_number: true
+image: WMF 5
+environment:
+  Module: tool
+install:
+- ps: . .\ci\Install.ps1
+build_script:
+- ps: . .\ci\Build.ps1
+test_script:
+- ps: . .\ci\Tests.ps1
+deploy_script:
+- ps: . .\ci\Deploy.ps1
+
+skip_commits:
+  message: /AppVeyor validate.*|Merge branch 'master' of.*//
+
+only_commits:
+  files:
+    - tool/*
+    - tests/*

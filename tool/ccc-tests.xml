@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- http://docs.citrix.com/en-us/citrix-cloud/overview/requirements/internet-connectivity-requirements.html -->
+<!-- https://docs.citrix.com/en-us/citrix-cloud/overview/requirements/internet-connectivity-requirements.html -->
 <Tests>
     <Ports>
         <Port>443</Port>
