@@ -19,51 +19,90 @@
         Description:
         Reads the URLs listed in Citrix Cloud Internet Connectivity Requirements article, tests them and returns the result.
 #>
-[CmdletBinding(SupportsShouldProcess = $False, DefaultParameterSetName = 'Base')]
+[CmdletBinding(SupportsShouldProcess = $False)]
 param (
-    [Parameter(Mandatory = $False, Position = 0, HelpMessage = "URI to the Citrix Cloud connectivity article.")]
-    [string] $Uri = "https://docs.citrix.com/en-us/citrix-cloud/overview/requirements/internet-connectivity-requirements.html",
-
     [Parameter(Mandatory = $False, Position = 1, HelpMessage = "Port to test.")]
     [string] $Port = "443"
 )
 
-# Read the Citrix article documenting the Citrix Cloud URLs
-Try {
-    Write-Verbose -Message "Reading Citrix Cloud Internet Connectivity Requirements article."
-    $content = Invoke-WebRequest -UseBasicParsing -Uri $uri
-}
-Catch {
-    Throw "Failed to read Citrix URLs source document."
-}
+#region Functions
+Function Get-CitrixCloudArticleUrls {
+    param(
+        [Parameter(Mandatory = $False, Position = 0)]
+        [string] $Uri = "https://docs.citrix.com/en-us/citrix-cloud/overview/requirements/internet-connectivity-requirements.html"
+    )
 
-If ($Null -ne $content) {
-    Write-Verbose -Message "Successfully read Citrix Cloud Internet Connectivity Requirements article."
+    Try {
+        # Read the Citrix article documenting the Citrix Cloud URLs
+        Write-Verbose -Message "Reading Citrix Cloud Internet Connectivity Requirements article."
+        $content = Invoke-WebRequest -UseBasicParsing -Uri $Uri
+    }
+    Catch {
+        Throw "Failed to read Citrix URLs source document."
+    }
 
-    # Find <code> elements in the HTML that are the URLs
-    Write-Verbose -Message "Filtering article for URLs."
-    $code = $content.Content -Replace "`r|`n" -Replace ">\s*<", "><" -Replace "<code", "`n<code" -Replace "/code>", "/code>`n" -Split "`n" | `
-        Where-Object { $_ -match "</code>$" }
+    If ($Null -ne $content) {
+        Write-Verbose -Message "Successfully read: $(Split-Path -Path $Uri -Leaf)."
 
-    # URLs are repeated, so sort for unique
-    Write-Verbose -Message "Sorting for unique URLs."
-    $code = $code | Select-Object -Unique
+        # Find <code> elements in the HTML that are the URLs
+        Write-Verbose -Message "Filtering article for URLs."
+        $code = $content.Content -Replace "`r|`n" -Replace ">\s*<", "><" -Replace "<code", "`n<code" -Replace "/code>", "/code>`n" -Split "`n" | `
+            Where-Object { $_ -match "</code>$" }
 
-    # Grab the URLs inside <code></code>
-    Write-Verbose -Message "Extracting URL strings."
-    $regEx = "^<code.*>(.*?)<\/\w+>"
-    $urls = $code | ForEach-Object { If ($_ -match $regEx) { $matches[1] } }
+        # URLs are repeated, so sort for unique
+        Write-Verbose -Message "Sorting for unique URLs."
+        $code = $code | Select-Object -Unique
+
+        # Grab the URLs inside <code></code>
+        Write-Verbose -Message "Extracting URL strings."
+        $regEx = "^<code.*>(.*?)<\/\w+>"
+        $urls = $code | ForEach-Object { If ($_ -match $regEx) { $matches[1] } }
     
-    # Strip out
-    Write-Verbose -Message "Stripping URIs."
-    $regEx = "https:\/\/|\*\."
-    $urls = $urls -replace $regEx
+        # Strip out
+        Write-Verbose -Message "Stripping URIs."
+        $regEx = "https:\/\/|\*\."
+        $urls = $urls -replace $regEx
+
+        # Return the URLs
+        Write-Output $urls
+    }
+}
+
+Function Get-UrlsFromCsv {
+    param(
+        [Parameter(Mandatory = $False, Position = 0)]
+        [string] $Uri = "https://raw.githubusercontent.com/aaronparker/CitrixCloud/master/tools/CitrixCloudHosts.csv"
+    )
+
+    Try {
+        # Read the Citrix article documenting the Citrix Cloud URLs
+        Write-Verbose -Message "Reading content from: $(Split-Path -Path $Uri -Leaf)."
+        $content = Invoke-WebRequest -UseBasicParsing -Uri $Uri
+    }
+    Catch {
+        Throw "Failed to read source document."
+    }
+
+    If ($Null -ne $content) {
+        Write-Verbose -Message "Successfully read: $(Split-Path -Path $Uri -Leaf)."
+        $output = $content.Content | ConvertFrom-Csv
+        Write-Output $output
+    }
+}
+Function Test-Hosts {
+    param(
+        [Parameter(Mandatory = $True, Position = 0)]
+        [string[]] $Urls,
+
+        [Parameter(Mandatory = $False, Position = 1)]
+        [string] $Port = 443
+    )
 
     # Output object
     $output = @()
     
     # Test each URL and output the result
-    ForEach ($url in $urls) {
+    ForEach ($url in $Urls) {
         Write-Verbose -Message "Testing connection to: $url."
         $item = New-Object PSCustomObject
         
@@ -81,4 +120,20 @@ If ($Null -ne $content) {
 
     # Return output to the pipeline
     Write-Output $output
+}
+#endregion
+
+# Grab the URLs and test them. Return the result
+$urls = Get-CitrixCloudArticleUrls 
+If ($Null -ne $urls) {
+    $result = Test-Hosts -Urls $urls -Port $Port
+    Write-Output $result
+}
+
+$urls = Get-UrlsFromCsv 
+If ($Null -ne $urls) {
+    ForEach ($url in $urls) {
+        $result = Test-Hosts -Urls $url.Host -Port $url.Port
+        Write-Output $result
+    }
 }
