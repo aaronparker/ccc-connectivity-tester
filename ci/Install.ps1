@@ -21,7 +21,7 @@ If (Test-Path 'env:APPVEYOR_BUILD_FOLDER') {
 Else {
     # Local Testing 
     $projectRoot = Resolve-Path -Path (((Get-Item (Split-Path -Parent -Path $MyInvocation.MyCommand.Definition)).Parent).FullName)
-    $module = "tool"
+    $module = "tools"
 }
 $tests = Join-Path $projectRoot "tests"
 $output = Join-Path $projectRoot "TestsResults.xml"
